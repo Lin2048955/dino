@@ -36,10 +36,10 @@ cactus_velocity = 5
 
 #鳥
 
-bird_width = 25
-bird_height = 45
+bird_width = 50
+bird_height = 40
 bird_rects = []
-bird_velocity = 5 
+bird_velocity = 6
 
 
 clock = pygame.time.Clock()
@@ -62,9 +62,9 @@ def spawn_cactus(cactus_width, cactus_height, cactus_rects):
              cactus_rects.append(cactus_rect)
 
 def spawn_bird(bird_width, bird_height, bird_rects):
-            if random.randint(1, 800) == 1:
-             bird_rect = pygame.Rect(1290, 400, bird_width, bird_height)
-             bird_rects.append(bird_rect)
+    if random.randint(1, 800) == 1:
+        bird_rect = pygame.Rect(1290, random.randint(200, 300), bird_width, bird_height)
+        bird_rects.append(bird_rect)
 
 
 
@@ -132,9 +132,10 @@ while running:
             if cactus_rect.x < -cactus_width:
                 cactus_rects.remove(cactus_rect)
 
-        for bird_rect_rect in bird_rects:
-            bird_rects.x -= bird_velocity
-            if bird_rects.x < -bird_width:
+         # 移動鳥
+        for bird_rect in bird_rects[:]:
+            bird_rect.x -= bird_velocity
+            if bird_rect.x < -bird_width:
                 bird_rects.remove(bird_rect)
 
         # 碰撞檢測
@@ -147,8 +148,8 @@ while running:
         for bird_rect in bird_rects:
             if dino_rect.colliderect(bird_rect):
                 if score > highscore:
-                    highscore=score
-                gameover=True
+                    highscore = score
+                gameover = True
                 
         screen.fill((255,255,255))
         # 更新分數（每幀增加）
@@ -186,7 +187,7 @@ while running:
         for cactus_rect in cactus_rects:
             screen.blit(img_cactus, cactus_rect)
         for bird_rect in bird_rects:
-            screen.blit(img_birdflying, bird_rect)
+            screen.blit(img_birdflying[frame], bird_rect)
         # flip() the display to put your work on screen
         pygame.display.flip()
 
