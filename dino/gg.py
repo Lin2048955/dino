@@ -13,6 +13,7 @@ img_dinorun=[pygame.image.load("DinoRun1.png"),pygame.image.load("DinoRun2.png")
 img_dinoduck=[pygame.image.load("DinoDuck1.png"),pygame.image.load("DinoDuck2.png")]
 img_birdflying=[pygame.image.load("Bird1.png"),pygame.image.load("Bird2.png")]
 img_bird=pygame.image,load("Bird1.png")
+img_track = pygame.image.load("track.png")
 
 img_cactus = pygame.image.load("cactus.png")
 img_dino = pygame.transform.scale(img_dino,(100,100))
@@ -25,7 +26,7 @@ dino_rect.x = 50
 dino_rect.y = 300
 jump = 12  # 恐龍垂直速度
 is_jumping = False
-g= 0.3 # 重力   
+g= 0.5 # 重力   
 now_jump =jump  # 跳躍力度
 
 #設定仙人掌
@@ -33,16 +34,21 @@ cactus_width = 25
 cactus_height = 45
 cactus_rects = []
 cactus_velocity = 5 
-
+speed=cactus_velocity
 #鳥
 
 bird_width = 50
 bird_height = 40
 bird_rects = []
-bird_velocity = 6
+bird_velocity = 5
 
 
 clock = pygame.time.Clock()
+
+#等級
+level =0
+speedlist = [5,6,7,8,9]
+
 
 score = 0  # 初始分數
 highscore=0
@@ -58,12 +64,12 @@ frame=0
 
 def spawn_cactus(cactus_width, cactus_height, cactus_rects):
             if random.randint(1, 500) == 1:
-             cactus_rect = pygame.Rect(1290, 325, cactus_width, cactus_height)
+             cactus_rect = pygame.Rect(1280, 325, cactus_width, cactus_height)
              cactus_rects.append(cactus_rect)
 
 def spawn_bird(bird_width, bird_height, bird_rects):
     if random.randint(1, 800) == 1:
-        bird_rect = pygame.Rect(1290, random.randint(200, 300), bird_width, bird_height)
+        bird_rect = pygame.Rect(1280, random.randint(200, 290), bird_width, bird_height)
         bird_rects.append(bird_rect)
 
 
@@ -73,6 +79,17 @@ while running:
     spawn_bird(bird_width, bird_height, bird_rects)
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
+    
+    if score >3000:
+        speed = speedlist[3]
+        level = 3
+    elif score >2000:
+        speed = speedlist[2]
+        level =2
+    elif score>1000:
+        speed = speedlist[1]
+        level = 1 
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -113,6 +130,8 @@ while running:
     
 
     if not gameover:
+        
+
         if is_jumping:
             dino_rect.y -= now_jump
             now_jump -= g  # 重力作用
@@ -139,29 +158,39 @@ while running:
                 bird_rects.remove(bird_rect)
 
         # 碰撞檢測
-        for cactus_rect in cactus_rects:
+        for cactus_rect in cactus_rects :
             if dino_rect.colliderect(cactus_rect):
                 if score > highscore:
                     highscore=score
                 gameover=True
+                speed=cactus_velocity
+                
+                
+                
 
         for bird_rect in bird_rects:
-            if dino_rect.colliderect(bird_rect):
+           if dino_rect.colliderect(bird_rect):
                 if score > highscore:
-                    highscore = score
-                gameover = True
+                    highscore=score
+                gameover=True
+
+          
                 
         screen.fill((255,255,255))
+        screen.blit(img_track,(0,370)) # 多加這行
+
         # 更新分數（每幀增加）
         score += 1
 
-        # 顯示分數
+        # 顯示分數及等級
         score_text = font.render(f"Score: {score}", True, (0, 0, 0))
         screen.blit(score_text, (10, 10))  # 顯示在畫面左上角
         
         hiscore_text = font.render(f" hi Score: {highscore}", True, (0, 0, 0))
         screen.blit(hiscore_text, (10, 30))
-
+        
+        level_show = font.render(f"Level: {level}",True,(0, 0, 0))
+        screen.blit(level_show,(10,50))
 
         
         if gameover:
@@ -193,4 +222,4 @@ while running:
 
         clock.tick(60)  # limits FPS to 60
 
-pygame.quit()
+pygame.quit() 
