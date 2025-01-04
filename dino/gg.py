@@ -17,6 +17,7 @@ img_birdrun = [pygame.image.load("Bird1.png"),pygame.image.load("Bird2.png")]
 img_track = pygame.image.load("track.png")
 img_missile = pygame.image.load("missile.png")
 
+img_dino_gameover = pygame.image.load("dino.png")
 img_cactus = pygame.image.load("cactus.png")
 img_dino = pygame.transform.scale(img_dino,(100,100))
 img_missile = pygame.transform.scale(img_missile,(100,50))
@@ -79,6 +80,7 @@ while running:
                     is_jumping = True
                 if event.key == pygame.K_r:
                     score = 0
+                    level=0
                     cactus_rect.x = 3000
                     bird_rect.x = 2000
                     gameover = False
@@ -188,7 +190,7 @@ while running:
 
                 # 檢測飛彈與飛鳥的碰撞
             if missile_rect.colliderect(bird_rect):
-                score += 500
+                score += 1000
                 missile_rect.x = 1280  # 重置飛彈
                 bird_rect.x = random.randint(1280, 2000)  # 重置飛鳥
                 attack = False
@@ -197,8 +199,14 @@ while running:
         if gameover:
             gameover_show = font.render(f"Game Over",True, BLACK)
             screen.blit(gameover_show,(550,150))
-            speed = initspeed 
-        
+            speed = initspeed
+            screen.blit(img_dino_gameover, dino_rect)
+        else:
+            if is_ducking:
+                screen.blit(img_dinoduck[frame],dino_rect)
+            else:
+                screen.blit(img_dinorun[frame],dino_rect)
+
 
         # 更新跑步動畫
         nowtime = pygame.time.get_ticks()
@@ -208,10 +216,7 @@ while running:
 
         
         
-        if is_ducking:
-            screen.blit(img_dinoduck[frame],dino_rect)
-        else:
-            screen.blit(img_dinorun[frame],dino_rect)
+        
         # RENDER YOUR GAME HERE
         # screen.blit(img_dino,dino_rect)
         screen.blit(img_cactus,cactus_rect)
