@@ -17,7 +17,6 @@ img_birdrun = [pygame.image.load("Bird1.png"),pygame.image.load("Bird2.png")]
 img_track = pygame.image.load("track.png")
 img_missile = pygame.image.load("missile.png")
 
-
 img_cactus = pygame.image.load("cactus.png")
 img_dino = pygame.transform.scale(img_dino,(100,100))
 img_missile = pygame.transform.scale(img_missile,(100,50))
@@ -55,7 +54,7 @@ font = pygame.font.Font(None,36)
 
 # 設定等級
 level =0
-speedlist = [5,6,7,8,9]
+speedlist = [5,6,7,8,9,10,20]
 
 clock = pygame.time.Clock()
 running = True
@@ -71,7 +70,7 @@ while running:
     # pygame.QUIT event means the user clicked X to close your window
     score += 1 
 
-
+    #遊戲按鍵設定
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -84,9 +83,9 @@ while running:
                     bird_rect.x = 2000
                     gameover = False
                 if event.key == pygame.K_v:
-                    attack=True
-                    missile_rect.y=dino_rect.y+20
-                    missile_rect.x=dino_rect.x+50
+                    attack = True
+                    missile_rect.y = dino_rect.y + 40  
+                    missile_rect.x = dino_rect.x + 50  
 
                 if event.key == pygame.K_c:
                     dino_rect.y = 330
@@ -107,7 +106,7 @@ while running:
 
 
                     
-
+    #主要判斷式
     if not gameover:
         if is_jumping:
             dino_rect.y -= nowjump
@@ -136,20 +135,30 @@ while running:
 
 
 
-        
+        #分數跟等級的關係
         if score>1000:
             speed = speedlist[1]
             level = 1
-        elif score >2000:
+        if score >2000:
             speed = speedlist[2]
             level =2
-        elif score >3000:
+        if score >3000:
             speed = speedlist[3]
             level = 3
-
+        if score >4000:
+            speed = speedlist[4]
+            level = 4
+        if score >6000:
+            speed = speedlist[5]
+            level = 5
+        if score >10000:
+            
+            speed = speedlist[6]
+            level = "Final"  
+            
         
 
-        # fill the screen with a color to wipe away anything from last frame
+        # 在螢幕上顯示物件
         screen.fill((255,255,255))
         screen.blit(img_track,(0,370))
 
@@ -159,24 +168,36 @@ while running:
         highscore_show = font.render(f"Hi Score: {highscore}",True, BLACK)
         screen.blit(highscore_show,(10,30))
         
-        level_show = font.render(f"Level: {level} Speed: {speedlist[1]}",True, BLACK)
+        level_show = font.render(f"Level: {level} Speed: {speed}",True, BLACK)
         screen.blit(level_show,(10,50))
         
-        if attack:
-            screen.blit(img_missile,(missile_rect.x,missile_rect.y))
-            missile_rect.x+=5
-            if missile_rect.colliderect(cactus_rect):
-                missile_rect.x=1280
-                cactus_rect.x = random.randint(1280, 3000)
-            if missile_rect.colliderect(bird_rect):
-                missile_rect.x=1280
-                bird_rect.x = random.randint(1280, 3000)
+        if attack:#飛彈攻擊
+            screen.blit(img_missile, (missile_rect.x, missile_rect.y))
+            missile_rect.x += 10  # 讓飛彈持續向右移動
 
+                # 飛彈超出螢幕後重置
+            if missile_rect.x > 1280:
+                attack = False
+
+                # 檢測飛彈與仙人掌的碰撞
+            if missile_rect.colliderect(cactus_rect):
+                score += 500
+                missile_rect.x = 1280  # 重置飛彈
+                cactus_rect.x = random.randint(1280, 3000)  # 重置仙人掌
+                attack = False
+
+                # 檢測飛彈與飛鳥的碰撞
+            if missile_rect.colliderect(bird_rect):
+                score += 500
+                missile_rect.x = 1280  # 重置飛彈
+                bird_rect.x = random.randint(1280, 2000)  # 重置飛鳥
+                attack = False
 
 
         if gameover:
             gameover_show = font.render(f"Game Over",True, BLACK)
             screen.blit(gameover_show,(550,150))
+            speed = initspeed 
         
 
         # 更新跑步動畫
